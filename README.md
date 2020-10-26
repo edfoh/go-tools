@@ -14,6 +14,13 @@ Git clone this repository first, then run the following command
 go install github.com/edfoh/go-tools/protobuf-any-encoder
 ```
 
+Note: Please make sure your `GOPATH` is set into your PATH.
+
+```
+GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+```
+
 ### Usage Examples
 
 ```sh
