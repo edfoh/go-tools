@@ -8,6 +8,8 @@ Currently supports `StringValue, Int32Value and Struct`
 
 ### Installation
 
+Git clone this repository first, then run the following command
+
 ```sh
 go install github.com/edfoh/go-tools/protobuf-any-encoder
 ```
