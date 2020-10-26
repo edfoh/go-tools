@@ -2,7 +2,9 @@
 
 ## protobuf-any-encoder
 
-this CLI tool will take an input data or file which has a json payload and wrapper that into a `Protobuf Struct` into a `Protobuf Any`. It will output the `json` representation that you can use, in tools such as [BloomRPC](https://github.com/uw-labs/bloomrpc)
+this CLI tool will take an input data with a specified type and wraps that within [Protobuf Any](https://developers.google.com/protocol-buffers/docs/proto3#any). It will output the `json` representation with the **encoded** value that you can use, in tools such as [BloomRPC](https://github.com/uw-labs/bloomrpc)
+
+Currently supports `StringValue, Int32Value and Struct`
 
 ### Installation
 
@@ -13,6 +15,7 @@ go install github.com/edfoh/go-tools/protobuf-any-encoder
 ### Usage Examples
 
 ```sh
+# json to struct 
 data=$(cat <<EOF
 {
     "id": "123",
@@ -23,14 +26,16 @@ data=$(cat <<EOF
 EOF
 )
 
-protobuf-any-encoder -data-input $data
-```
+protobuf-any-encoder -data $data -type struct
 
+# string value
+data="test"
+protobuf-any-encoder -data $data -type string
 
-Reading from a file
+# int32 value
+data=456
+protobuf-any-encoder -data $data -type int
 
-```sh
-protobuf-any-encoder -data-file ./data.json
 ```
 
 Here's an example of the output

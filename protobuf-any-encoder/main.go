@@ -5,21 +5,28 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
+	"strconv"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var (
-	dataInput = flag.String("data-input", "", "input data")
-	dataFile  = flag.String("data-file", "", "input data file")
+	data     = flag.String("data", "", "input data")
+	dataType = flag.String("type", "", "type of input data. enum: struct, string, int")
 )
 
 func main() {
 	flag.Parse()
-	if err := run(); err != nil {
+	if *data == "" || *dataType == "" {
+		fmt.Fprintln(os.Stderr, errors.New("please specify an argument. use -h for help"))
+		os.Exit(1)
+	}
+
+	if err := run(*data, *dataType); err != nil {
 		if err != flag.ErrHelp {
 			fmt.Fprintln(os.Stderr, err)
 		}
@@ -27,21 +34,25 @@ func main() {
 	}
 }
 
-func run() error {
-	var contents []byte
-	if *dataFile != "" {
-		d, err := readFile(*dataFile)
+func run(data, dataType string) error {
+	var output string
+	var err error
+
+	switch dataType {
+	case "struct":
+		output, err = encodeJSON([]byte(data))
+	case "string":
+		v := wrapperspb.String(data)
+		output, err = encode(v)
+	case "int":
+		i, err := strconv.ParseInt(data, 10, 32)
 		if err != nil {
 			return err
 		}
-		contents = d
-	} else if *dataInput != "" {
-		contents = []byte(*dataInput)
-	} else {
-		return fmt.Errorf("please specify an argument. use -h for help")
+		v := wrapperspb.Int32(int32(i))
+		output, err = encode(v)
 	}
 
-	output, err := encode(contents)
 	if err != nil {
 		return err
 	}
@@ -50,7 +61,7 @@ func run() error {
 	return nil
 }
 
-func encode(contents []byte) (string, error) {
+func encodeJSON(contents []byte) (string, error) {
 	var m map[string]interface{}
 
 	err := json.Unmarshal(contents, &m)
@@ -63,7 +74,11 @@ func encode(contents []byte) (string, error) {
 		return "", err
 	}
 
-	any, err := anypb.New(aStruct)
+	return encode(aStruct)
+}
+
+func encode(src protoreflect.ProtoMessage) (string, error) {
+	any, err := anypb.New(src)
 	if err != nil {
 		return "", err
 	}
@@ -74,16 +89,4 @@ func encode(contents []byte) (string, error) {
 	}
 
 	return string(anyJSON), nil
-}
-
-func readFile(fileLoc string) ([]byte, error) {
-	if _, err := os.Stat(fileLoc); os.IsNotExist(err) {
-		return []byte{}, errors.New("unable to read file")
-	}
-
-	b, err := ioutil.ReadFile(fileLoc)
-	if err != nil {
-		return []byte{}, fmt.Errorf("open input: %v", err)
-	}
-	return b, nil
 }

@@ -30,3 +30,4 @@ google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/structpb
+google.golang.org/protobuf/types/known/wrapperspb
