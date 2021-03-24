@@ -13,7 +13,7 @@ go install github.com/edfoh/go-tools/hmac-gen
 ```
 
 
-3## Usage Example 
+### Usage Example 
 
 ```sh
 # assuming you have a file called payload.txt that has your request body
