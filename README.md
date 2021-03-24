@@ -1,5 +1,32 @@
 # go-tools
 
+## HMAC Generator
+
+This tool is to support HMAC generation of webhooks. It uses SHA-256, and generates a signature based on input secret, timestamp and request body.
+
+### Installation 
+
+Git clone this repository first, then run the following command
+
+```sh
+go install github.com/edfoh/go-tools/hmac-gen
+```
+
+
+3## Usage Example 
+
+```sh
+# assuming you have a file called payload.txt that has your request body
+payload=$(cat ./payload.txt)
+
+hmac-gen -secret -gq63hsjecrEcDQySBxRTX1pMB2q3vjvr2uX09h9eCc= \
+    -ts 2021-03-24T00:45:29Z \
+    -payload $payload
+
+# Result: DGM3pfJyjidZXNyJrFiQR5L6BPZgi1JxuJmJ4ycSRi4=
+
+```
+
 ## protobuf-any-encoder
 
 this CLI tool will take an input data with a specified type and wraps that within [Protobuf Any](https://developers.google.com/protocol-buffers/docs/proto3#any). It will output the `json` representation with the **encoded** value that you can use, in tools such as [BloomRPC](https://github.com/uw-labs/bloomrpc)
